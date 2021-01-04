@@ -48,7 +48,6 @@ def write_image(file_path, image, sub_dir="report"):
 
 
 for image_path in paths.list_images(args["images"]):
-    print(image_path)
     image = cv2.imread(image_path)
     try:
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
