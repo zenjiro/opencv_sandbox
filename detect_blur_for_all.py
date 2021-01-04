@@ -1,13 +1,20 @@
-from imutils import paths
 import argparse
-import cv2
 import os
 
+import cv2
+from imutils import paths
+
 ap = argparse.ArgumentParser()
-ap.add_argument("-i", "--images", required=True,
-                help="path to input directory of images")
-ap.add_argument("-t", "--threshold", type=float, default=100.0,
-                help="focus measures that fall below this value will be considered 'blurry'")
+ap.add_argument(
+    "-i", "--images", required=True, help="path to input directory of images"
+)
+ap.add_argument(
+    "-t",
+    "--threshold",
+    type=float,
+    default=100.0,
+    help="focus measures that fall below this value will be considered 'blurry'",
+)
 args = vars(ap.parse_args())
 
 
@@ -16,8 +23,15 @@ def variance_of_laplacian(image):
 
 
 def report_image(image, laplacian, text):
-    cv2.putText(image, "{}: {:.2f}".format(text, laplacian.var()), (10, 30),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 3)
+    cv2.putText(
+        image,
+        "{}: {:.2f}".format(text, laplacian.var()),
+        (10, 30),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.8,
+        (0, 255, 0),
+        3,
+    )
     # cv2.imshow("Image", image)
     # key = cv2.waitKey(0)
 
