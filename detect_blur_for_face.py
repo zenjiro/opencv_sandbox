@@ -112,6 +112,8 @@ for image_path in paths.list_images(args["images"]):
         face_laplacians = [
             variance_of_laplacian(face_image) for face_image in face_images
         ]
+    else:
+        continue
 
     laplacian = variance_of_laplacian(gray)
     report_image(image, laplacian, faces, face_laplacians)
