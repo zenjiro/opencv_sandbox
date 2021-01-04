@@ -118,4 +118,3 @@ for image_path in paths.list_images(args["images"]):
     laplacian = variance_of_laplacian(gray)
     report_image(image, laplacian, faces, face_laplacians)
     write_image(image_path, image)
-    write_image(image_path, laplacian, "laplacian")
