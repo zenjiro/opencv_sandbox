@@ -1,5 +1,6 @@
 import argparse
 import os
+import sys
 
 import cv2
 from imutils import paths
@@ -53,11 +54,10 @@ def report_image(image, laplacian, faces, face_laplacians=None):
     # key = cv2.waitKey(0)
 
 
-def write_image(file_path, image, sub_dir="/report", suffix=""):
+def write_image(file_path, image, sub_dir="report", suffix=""):
     dir_file = os.path.split(file_path)
-    dir = dir_file[0]
     file_name = dir_file[1]
-    report_dir = dir + sub_dir
+    report_dir = sub_dir
 
     root, ext = os.path.splitext(report_dir + "/" + file_name)
     export_file_path = root + suffix + ext
@@ -92,7 +92,11 @@ def resize_image_to_harf(image):
 
 for image_path in paths.list_images(args["images"]):
     original_image = cv2.imread(image_path)
-    image = resize_image(original_image)
+    try:
+        image = resize_image(original_image)
+    except (cv2.error, AttributeError) as exception:
+        print(exception, file=sys.stderr)
+        continue
 
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
@@ -103,7 +107,7 @@ for image_path in paths.list_images(args["images"]):
         face_images = crop_faces(gray, faces)
 
         for index, face_image in enumerate(face_images):
-            write_image(image_path, face_image, "/faces", "_" + str(index))
+            write_image(image_path, face_image, "faces", "_" + str(index))
 
         face_laplacians = [
             variance_of_laplacian(face_image) for face_image in face_images
@@ -112,4 +116,4 @@ for image_path in paths.list_images(args["images"]):
     laplacian = variance_of_laplacian(gray)
     report_image(image, laplacian, faces, face_laplacians)
     write_image(image_path, image)
-    write_image(image_path, laplacian, "/laplacian")
+    write_image(image_path, laplacian, "laplacian")
