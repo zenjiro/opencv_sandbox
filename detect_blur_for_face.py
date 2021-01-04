@@ -23,7 +23,7 @@ def variance_of_laplacian(image):
     return cv2.Laplacian(image, cv2.CV_64F)
 
 
-def report_image(image, laplacian, faces, face_laplacians=None):
+def report_image(image, faces, face_laplacians=None):
     if len(faces):
         for index, (x, y, w, h) in enumerate(faces):
             cv2.rectangle(image, (x, y), (x + w, y + h), (255, 0, 0), 2)
@@ -101,6 +101,5 @@ for image_path in paths.list_images(args["images"]):
     else:
         continue
 
-    laplacian = variance_of_laplacian(gray)
-    report_image(image, laplacian, faces, face_laplacians)
+    report_image(image, faces, face_laplacians)
     write_image(image_path, image)
