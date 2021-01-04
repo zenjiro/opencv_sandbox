@@ -66,13 +66,13 @@ def crop_faces(gray, faces):
 def resize_image(image):
     height, width = image.shape[:2]
     while width >= 1500:
-        image = resize_image_to_harf(image)
+        image = resize_image_to_half(image)
         height, width = image.shape[:2]
     else:
         return image
 
 
-def resize_image_to_harf(image):
+def resize_image_to_half(image):
     return cv2.resize(image, None, fx=0.5, fy=0.5)
 
 
