@@ -29,7 +29,7 @@ def report_image(image, faces, face_laplacians=None):
             cv2.rectangle(image, (x, y), (x + w, y + h), (255, 0, 0), 2)
             cv2.putText(
                 image,
-                "{}: {:.2f}".format("Face", face_laplacians[index].var()),
+                "{:.2f}".format(face_laplacians[index].var()),
                 (x, y),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.8,
