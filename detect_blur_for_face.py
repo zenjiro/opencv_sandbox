@@ -26,14 +26,18 @@ def variance_of_laplacian(image):
 def report_image(image, faces, face_laplacians=None):
     if len(faces):
         for index, (x, y, w, h) in enumerate(faces):
-            cv2.rectangle(image, (x, y), (x + w, y + h), (255, 0, 0), 2)
+            if face_laplacians[index].var() < args["threshold"]:
+                color = (41, 41, 239)  # Scarlet Red #ef2929
+            else:
+                color = (52, 226, 138)  # Chameleon #8ae234
+            cv2.rectangle(image, (x, y), (x + w, y + h), color, 4)
             cv2.putText(
                 image,
                 "{:.2f}".format(face_laplacians[index].var()),
-                (x, y),
+                (x, y - 6),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.8,
-                (0, 255, 0),
+                color,
                 3,
             )
     # cv2.imshow("Image", image)
