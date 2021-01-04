@@ -37,11 +37,10 @@ def report_image(image, laplacian, text):
     # key = cv2.waitKey(0)
 
 
-def write_image(file_path, image, sub_dir="/report"):
+def write_image(file_path, image, sub_dir="report"):
     dir_file = os.path.split(file_path)
-    dir = dir_file[0]
     file_name = dir_file[1]
-    report_dir = dir + sub_dir
+    report_dir = sub_dir
 
     os.makedirs(report_dir, exist_ok=True)
 
@@ -64,4 +63,4 @@ for image_path in paths.list_images(args["images"]):
 
     report_image(image, laplacian, text)
     write_image(image_path, image)
-    write_image(image_path, laplacian, "/laplacian")
+    write_image(image_path, laplacian, "laplacian")
