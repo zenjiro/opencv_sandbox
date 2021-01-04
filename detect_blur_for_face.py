@@ -24,10 +24,6 @@ def variance_of_laplacian(image):
 
 
 def report_image(image, laplacian, faces, face_laplacians=None):
-    text = "Not Blurry"
-    if laplacian.var() < args["threshold"]:
-        text = "Blurry"
-
     if len(faces):
         for index, (x, y, w, h) in enumerate(faces):
             cv2.rectangle(image, (x, y), (x + w, y + h), (255, 0, 0), 2)
@@ -40,16 +36,6 @@ def report_image(image, laplacian, faces, face_laplacians=None):
                 (0, 255, 0),
                 3,
             )
-
-    cv2.putText(
-        image,
-        "{}: {:.2f}".format(text, laplacian.var()),
-        (10, 30),
-        cv2.FONT_HERSHEY_SIMPLEX,
-        0.8,
-        (0, 255, 0),
-        3,
-    )
     # cv2.imshow("Image", image)
     # key = cv2.waitKey(0)
 
