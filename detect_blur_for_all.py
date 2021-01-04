@@ -1,5 +1,6 @@
 import argparse
 import os
+import sys
 
 import cv2
 from imutils import paths
@@ -48,8 +49,13 @@ def write_image(file_path, image, sub_dir="/report"):
 
 
 for image_path in paths.list_images(args["images"]):
+    print(image_path)
     image = cv2.imread(image_path)
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    try:
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    except cv2.error as exception:
+        print(exception, file=sys.stderr)
+        continue
     laplacian = variance_of_laplacian(gray)
 
     text = "Not Blurry"
