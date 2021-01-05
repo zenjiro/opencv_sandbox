@@ -1,6 +1,6 @@
 # https://symfoware.blog.fc2.com/blog-entry-2413.html
 import cv2
-import numpy as np
+import numpy
 
 # 設定ファイル
 prototxt = "deploy.prototxt"
@@ -27,7 +27,7 @@ for i in range(0, detections.shape[2]):
     if confidence < confidence_limit:
         continue
     # 検出結果を描画
-    box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
+    box = detections[0, 0, i, 3:7] * numpy.array([w, h, w, h])
     (startX, startY, endX, endY) = box.astype("int")
     text = "{:.2f}%".format(confidence * 100)
     y = startY - 10 if startY - 10 > 10 else startY + 10
