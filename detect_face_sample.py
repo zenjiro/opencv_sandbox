@@ -9,6 +9,7 @@ import numpy
 prototxt = "deploy.prototxt"
 model = "res10_300x300_ssd_iter_140000_fp16.caffemodel"
 confidence_limit = 0.5
+confidence_limit2 = 0.8
 net = cv2.dnn.readNetFromCaffe(prototxt, model)
 output_directory = "output"
 os.makedirs(output_directory, exist_ok=True)
@@ -26,10 +27,10 @@ for file in sum([glob.glob(x) for x in sys.argv[1:]], []):
             continue
         box = detections[0, 0, i, 3:7] * numpy.array([w, h, w, h])
         start_x, start_y, end_x, end_y = box.astype("int")
-        text = "{:.2f}%".format(confidence * 100)
+        text = "{:.0f}%".format(confidence * 100)
         y = start_y - 10 if start_y - 10 > 10 else start_y + 10
-        cv2.rectangle(image, (start_x, start_y), (end_x, end_y), (0, 0, 255), 2)
-        cv2.putText(
-            image, text, (start_x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 255), 2
-        )
+        # Scarlet Red #ef2929 or Chameleon #8ae234
+        color = (41, 41, 239) if confidence < confidence_limit2 else (52, 226, 138)
+        cv2.rectangle(image, (start_x, start_y), (end_x, end_y), color, 10)
+        cv2.putText(image, text, (start_x, y), cv2.FONT_HERSHEY_SIMPLEX, 4, color, 10)
     cv2.imwrite(os.path.join(output_directory, os.path.basename(file)), image)
