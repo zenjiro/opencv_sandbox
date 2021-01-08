@@ -5,18 +5,19 @@ import sys
 import cv2
 from imutils import paths
 
-ap = argparse.ArgumentParser()
-ap.add_argument(
-    "-i", "--images", required=True, help="path to input directory of images"
-)
-ap.add_argument(
-    "-t",
-    "--threshold",
-    type=float,
-    default=100.0,
-    help="focus measures that fall below this value will be considered 'blurry'",
-)
-args = vars(ap.parse_args())
+if __name__ == "__main__":
+    ap = argparse.ArgumentParser()
+    ap.add_argument(
+        "-i", "--images", required=True, help="path to input directory of images"
+    )
+    ap.add_argument(
+        "-t",
+        "--threshold",
+        type=float,
+        default=100.0,
+        help="focus measures that fall below this value will be considered 'blurry'",
+    )
+    args = vars(ap.parse_args())
 
 
 def variance_of_laplacian(image):
@@ -64,6 +65,7 @@ def face_recognition(gray):
 
 
 def crop_faces(gray, faces):
+    print("crop_faces", gray, faces)
     return [gray[y : y + h, x : x + w] for x, y, w, h in faces]
 
 
@@ -80,30 +82,34 @@ def resize_image_to_half(image):
     return cv2.resize(image, None, fx=0.5, fy=0.5)
 
 
-for image_path in paths.list_images(args["images"]):
-    original_image = cv2.imread(image_path)
-    try:
-        image = resize_image(original_image)
-    except (cv2.error, AttributeError) as exception:
-        print(exception, file=sys.stderr)
-        continue
+if __name__ == "__main__":
+    for image_path in paths.list_images(args["images"]):
+        print(image_path)
+        original_image = cv2.imread(image_path)
+        try:
+            image = resize_image(original_image)
+        except (cv2.error, AttributeError) as exception:
+            print(exception, file=sys.stderr)
+            continue
 
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-    faces = face_recognition(gray)
+        faces = face_recognition(gray)
 
-    face_laplacians = None
-    if len(faces):
-        face_images = crop_faces(gray, faces)
+        face_laplacians = None
+        if len(faces):
+            face_images = crop_faces(gray, faces)
 
-        for index, face_image in enumerate(face_images):
-            write_image(image_path, face_image, "faces", "_" + str(index))
+            for index, face_image in enumerate(face_images):
+                write_image(image_path, face_image, "faces", "_" + str(index))
 
-        face_laplacians = [
-            variance_of_laplacian(face_image) for face_image in face_images
-        ]
-    else:
-        continue
+            face_laplacians = [
+                variance_of_laplacian(face_image) for face_image in face_images
+            ]
+            print("face_laplacians", face_laplacians)
+            print("var", face_laplacians[0].var())
+        else:
+            continue
 
-    report_image(image, faces, face_laplacians)
-    write_image(image_path, image)
+        report_image(image, faces, face_laplacians)
+        write_image(image_path, image)
