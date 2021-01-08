@@ -106,8 +106,6 @@ if __name__ == "__main__":
             face_laplacians = [
                 variance_of_laplacian(face_image) for face_image in face_images
             ]
-            print("face_laplacians", face_laplacians)
-            print("var", face_laplacians[0].var())
         else:
             continue
 
