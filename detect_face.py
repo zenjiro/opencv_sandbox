@@ -35,9 +35,8 @@ for file in sum([glob.glob(x) for x in sys.argv[1:]], []):
         face_image = cv2.resize(gray[y1:y2, x1:x2], (64, 64))
         var = detect_blur_for_face.variance_of_laplacian(face_image).var()
         text = f"{int(var)}"
-        y = y1 - 20 if y1 - 20 > 50 else y1 + 50
         # Scarlet Red #ef2929 or Chameleon #8ae234
         color = (41, 41, 239) if var < 100 else (52, 226, 138)
         cv2.rectangle(image, (x1, y1), (x2, y2), color, 10)
-        cv2.putText(image, text, (x1, y), cv2.FONT_HERSHEY_SIMPLEX, 2, color, 10)
+        cv2.putText(image, text, (x1, y2 + 40), cv2.FONT_HERSHEY_SIMPLEX, 1.5, color, 5)
     cv2.imwrite(os.path.join(output_directory, os.path.basename(file)), image)
