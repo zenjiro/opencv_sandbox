@@ -52,7 +52,14 @@ for file in sum([glob.glob(x) for x in sys.argv[1:]], []):
         cv2.putText(image, text, (x1, y2 + 40), cv2.FONT_HERSHEY_SIMPLEX, 1.5, color, 5)
         cv2.imwrite(os.path.join(output_directory, os.path.basename(file)), image)
     if detected and max_var < 100:
-        subprocess.run(["exiftool", "-Rating=2", os.path.join(output_directory, os.path.basename(file))])
+        subprocess.run(
+            [
+                "exiftool",
+                "-overwrite_original",
+                "-Rating=2",
+                os.path.join(output_directory, os.path.basename(file)),
+            ]
+        )
     if not detected:
         metadata = json.loads(
             subprocess.run(
@@ -136,4 +143,11 @@ for file in sum([glob.glob(x) for x in sys.argv[1:]], []):
         )
         cv2.imwrite(os.path.join(output_directory, os.path.basename(file)), image)
         if var < 100:
-            subprocess.run(["exiftool", "-Rating=1", os.path.join(output_directory, os.path.basename(file))])
+            subprocess.run(
+                [
+                    "exiftool",
+                    "-overwrite_original",
+                    "-Rating=1",
+                    os.path.join(output_directory, os.path.basename(file)),
+                ]
+            )
