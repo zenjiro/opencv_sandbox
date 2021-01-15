@@ -69,7 +69,7 @@ for file in sum([glob.glob(x) for x in sys.argv[1:]], []):
         ]
         scale = width / af_image_width
         color = (41, 41, 239)  # Scarlet Red #ef2929
-        min_x1, min_y1, max_x2, max_y2 = af_image_width, af_image_height, 0, 0
+        min_x, min_y, max_x, max_y = af_image_width, af_image_height, 0, 0
         for i in af_points_in_focus:
             x1 = int(
                 af_area_x_positions[i] - af_area_widths[i] / 2 + af_image_width / 2
@@ -79,17 +79,55 @@ for file in sum([glob.glob(x) for x in sys.argv[1:]], []):
             )
             x2 = x1 + af_area_widths[i]
             y2 = y1 + af_area_heights[i]
-            min_x1, min_y1, max_x2, max_y2 = (
-                min(min_x1, x1),
-                min(min_y1, y1),
-                max(max_x2, x2),
-                max(max_y2, y2),
+            min_x, min_y, max_x, max_y = (
+                min(min_x, x1),
+                min(min_y, y1),
+                max(max_x, x2),
+                max(max_y, y2),
             )
+        x1, y1, x2, y2 = min_x, min_y, max_x, max_y
+        if len(af_points_in_focus) == 1:
+            x1 = max(0, x1 - af_area_widths[0] / 2)
+            y1 = max(0, y1 - af_area_heights[0] / 2)
+            x2 = min(af_image_width - 1, x2 + af_area_widths[0] / 2)
+            y2 = min(af_image_height - 1, y2 + af_area_heights[0] / 2)
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        x1 = int(x1 * scale)
+        y1 = int(y1 * scale)
+        x2 = int(x2 * scale)
+        y2 = int(y2 * scale)
+        af_image = cv2.resize(
+            gray[
+                y1:y2,
+                x1:x2,
+            ],
+            (110, 110),
+        )
+        var = cv2.Laplacian(af_image, cv2.CV_64F).var()
+        text = f"{int(var)}"
+        # Scarlet Red #ef2929 or Chameleon #8ae234
+        color = (41, 41, 239) if var < 100 else (52, 226, 138)
         cv2.rectangle(
             image,
-            (int(min_x1 * scale), int(min_y1 * scale)),
-            (int(max_x2 * scale), int(max_y2 * scale)),
+            (x1, y1),
+            (x2, y2),
             color,
-            10,
+            3,
+        )
+        cv2.rectangle(
+            image,
+            (x1 + 5, y1 + 5),
+            (x2 - 5, y2 - 5),
+            color,
+            2,
+        )
+        cv2.putText(
+            image,
+            text,
+            (x1, y2 + 40),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            1.5,
+            color,
+            5,
         )
         cv2.imwrite(os.path.join(output_directory, os.path.basename(file)), image)
