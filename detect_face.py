@@ -33,6 +33,7 @@ for file in sum([glob.glob(x) for x in sys.argv[1:]], []):
     net.setInput(blob)
     detections = net.forward()
     detected = False
+    max_var = 0
     for i in range(0, detections.shape[2]):
         confidence = detections[0, 0, i, 2]
         if confidence < confidence_limit:
@@ -43,12 +44,15 @@ for file in sum([glob.glob(x) for x in sys.argv[1:]], []):
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         face_image = cv2.resize(gray[y1:y2, x1:x2], (64, 64))
         var = cv2.Laplacian(face_image, cv2.CV_64F).var()
+        max_var = max(var, max_var)
         text = f"{int(var)}"
         # Scarlet Red #ef2929 or Chameleon #8ae234
         color = (41, 41, 239) if var < 100 else (52, 226, 138)
         cv2.rectangle(image, (x1, y1), (x2, y2), color, 10)
         cv2.putText(image, text, (x1, y2 + 40), cv2.FONT_HERSHEY_SIMPLEX, 1.5, color, 5)
         cv2.imwrite(os.path.join(output_directory, os.path.basename(file)), image)
+    if detected and max_var < 100:
+        subprocess.run(["exiftool", "-rating=2", os.path.join(output_directory, os.path.basename(file))])
     if not detected:
         metadata = json.loads(
             subprocess.run(
@@ -131,3 +135,5 @@ for file in sum([glob.glob(x) for x in sys.argv[1:]], []):
             5,
         )
         cv2.imwrite(os.path.join(output_directory, os.path.basename(file)), image)
+        if var < 100:
+            subprocess.run(["exiftool", "-rating=1", os.path.join(output_directory, os.path.basename(file))])
