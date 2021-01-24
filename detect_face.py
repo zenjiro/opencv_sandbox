@@ -1,12 +1,11 @@
 import glob
-import os
-import sys
 import json
+import os
 import subprocess
+import sys
 
 import cv2
 import numpy
-
 
 prototxt = "deploy.prototxt"
 model = "res10_300x300_ssd_iter_140000_fp16.caffemodel"
@@ -16,6 +15,19 @@ output_directory = "output"
 os.makedirs(output_directory, exist_ok=True)
 for file in sum([glob.glob(x) for x in sys.argv[1:]], []):
     print(file)
+    metadata = json.loads(
+        subprocess.run(
+            [
+                "exiftool",
+                "-json",
+                "-Rating",
+                file,
+            ],
+            capture_output=True,
+        ).stdout.decode("UTF-8"),
+    )[0]
+    if metadata["Rating"] > 0:
+        continue
     image = cv2.imread(file)
     _, width = image.shape[:2]
     image = cv2.resize(image, None, fx=1920 / width, fy=1920 / width)
@@ -50,6 +62,7 @@ for file in sum([glob.glob(x) for x in sys.argv[1:]], []):
                 "exiftool",
                 "-overwrite_original",
                 "-Rating=2",
+                file,
                 os.path.join(output_directory, os.path.basename(file)),
             ]
         )
@@ -154,6 +167,7 @@ for file in sum([glob.glob(x) for x in sys.argv[1:]], []):
                     "exiftool",
                     "-overwrite_original",
                     "-Rating=1",
+                    file,
                     os.path.join(output_directory, os.path.basename(file)),
                 ]
             )
