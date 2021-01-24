@@ -18,7 +18,7 @@ for file in sum([glob.glob(x) for x in sys.argv[1:]], []):
     print(file)
     image = cv2.imread(file)
     _, width = image.shape[:2]
-    image = cv2.resize(image, None, fx=1920/width, fy=1920/width)
+    image = cv2.resize(image, None, fx=1920 / width, fy=1920 / width)
     height, width = image.shape[:2]
     blob = cv2.dnn.blobFromImage(
         cv2.resize(image, (300, 300)), 1.0, (300, 300), (104.0, 177.0, 123.0)
@@ -56,7 +56,20 @@ for file in sum([glob.glob(x) for x in sys.argv[1:]], []):
     if not detected:
         metadata = json.loads(
             subprocess.run(
-                ["exiftool", "-json", file], capture_output=True
+                [
+                    "exiftool",
+                    "-json",
+                    "-AFImageWidth",
+                    "-AFImageHeight",
+                    "-AFAreaWidths",
+                    "-AFAreaHeights",
+                    "-AFAreaXPositions",
+                    "-AFAreaYPositions",
+                    "-AFPointsInFocus",
+                    "-AFPointsSelected",
+                    file,
+                ],
+                capture_output=True,
             ).stdout.decode("UTF-8"),
         )[0]
         af_image_width = metadata["AFImageWidth"]
