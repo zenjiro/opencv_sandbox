@@ -8,15 +8,6 @@ import cv2
 import numpy
 
 
-def resize_image(image):
-    _, width = image.shape[:2]
-    while width >= 1500:
-        image = cv2.resize(image, None, fx=0.5, fy=0.5)
-        _, width = image.shape[:2]
-    else:
-        return image
-
-
 prototxt = "deploy.prototxt"
 model = "res10_300x300_ssd_iter_140000_fp16.caffemodel"
 confidence_limit = 0.3
@@ -25,7 +16,9 @@ output_directory = "output"
 os.makedirs(output_directory, exist_ok=True)
 for file in sum([glob.glob(x) for x in sys.argv[1:]], []):
     print(file)
-    image = resize_image(cv2.imread(file))
+    image = cv2.imread(file)
+    _, width = image.shape[:2]
+    image = cv2.resize(image, None, fx=1920/width, fy=1920/width)
     height, width = image.shape[:2]
     blob = cv2.dnn.blobFromImage(
         cv2.resize(image, (300, 300)), 1.0, (300, 300), (104.0, 177.0, 123.0)
